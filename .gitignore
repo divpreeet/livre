@@ -1,8 +1,7 @@
+node_modules
+.svelte-kit
 .DS_Store
-/.build
-/Packages
-xcuserdata/
-DerivedData/
-.swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
+vite.config.js.timestamp-*
+svelte.config.js.timestamp-*
+package-lock.json
+jsconfig.json
