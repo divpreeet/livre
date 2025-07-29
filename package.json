@@ -21,6 +21,7 @@
 	},
 	"dependencies": {
 		"@tailwindcss/vite": "^4.1.11",
+		"fflate": "^0.8.2",
 		"jszip": "^3.10.1"
 	}
 }
