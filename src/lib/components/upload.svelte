@@ -1,21 +1,16 @@
-<!--upload file functionality, add drag and drop later.-->
+<!--upload file functionality-->
 
 <script>
-    import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher()
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
 
-    let input;
-
-    function handleFile(event) {
-        const file = event.target.files[0];
-        if (file) dispatch('select', file);
-    }
-
-    export function open() {
-        input.click();
-    }
+  function handleFile(event) {
+    const file = event.target.files[0];
+    if (file) dispatch('select', file);
+  }
 </script>
 
-<input bind:this={input} type="file" accept=".cbz,.epub" on:change={handleFile} class="hidden"/>
-
-<slot />
+<label class="block cursor-pointer text-sky-600 hover:underline">
+  <span>upload a book!</span>
+  <input type="file" accept=".cbz,.epub" class="hidden" on:change={handleFile} />
+</label>
