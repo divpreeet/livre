@@ -1,7 +1,7 @@
   <script>
     import { onMount } from 'svelte';
-    import Reader from '$lib/components/Reader.svelte';
-    import Upload from '$lib/components/Upload.svelte';
+    import Reader from '$lib/components/reader.svelte';
+    import Upload from '$lib/components/upload.svelte';
 
     let selFile = null;
     let selPage = 0;
