@@ -1,7 +1,5 @@
 node_modules
 .svelte-kit
 .DS_Store
-vite.config.js
-svelte.config.js
-package-lock.json
-jsconfig.json
+dist
+build
