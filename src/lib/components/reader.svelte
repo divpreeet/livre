@@ -1,7 +1,7 @@
 <!--reader component-->
 
 <script>
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import { unzipSync } from 'fflate';
 
   export let file;
@@ -12,8 +12,20 @@
   let current = selPage;
   let error = "";
   let loading = true;
+  let showControls = true;
+  let timer;
+
+  function resetTimer() {
+    showControls = true;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      showControls = false
+    }, 3000);
+  }
 
   onMount(async () => {
+    resetTimer();
+
     try {
       const array_buffer = await file.arrayBuffer();
       const entries = unzipSync(new Uint8Array(array_buffer));
@@ -21,9 +33,11 @@
         .filter(([name]) => /\.(jpe?g|png)$/i.test(name))
         .sort(([a], [b]) => a.localeCompare(b));
 
-      if (imageEntries.length === 0) throw new Error("no image found in file");
+      if (imageEntries.length === 0) {
+        throw new Error("no image found in file");
+      }
 
-      images = imageEntries.map(([name, data]) => {
+      images = imageEntries.map(([_, data]) => {
         const blob = new Blob([data.buffer], { type: "image/*" });
         return URL.createObjectURL(blob);
       });
@@ -33,6 +47,10 @@
     } finally {
       loading = false;
     }
+  });
+
+  onDestroy(() => {
+    clearTimeout(timer);
   });
 
   function next() {
@@ -55,22 +73,32 @@
 </script>
 
 {#if loading}
-  <p class="text-center mt-12">Loading book...</p>
+  <p class="text-center mt-12">Loading book…</p>
 {:else if error}
   <p class="text-red-500 text-center mt-12">{error}</p>
 {:else}
-  <div class="flex flex-col h-full w-full">
-    <div class="flex-1 flex justify-center items-center bg-black p-4 overflow-auto">
-      <img src={images[current]} alt="page" class="max-h-full w-auto rounded shadow" />
-      {#if images[current + 1]}
-        <img src={images[current + 1]} alt="page" class="max-h-full w-auto rounded shadow" />
-      {/if}
+  <div class="relative flex h-screen w-full flex-col h-full w-full bg-black rounded-xl-2 shadow-lg overflow-hidden" on:mousemove={resetTimer} >
+    <div class="flex-1 flex bg-gutter p-6 gap-6 justify-center items-center overflow-auto">
+      <div class="flex flex-1 max-w-7xl gap-6">
+        <img
+          src={images[current]} alt="page" class="flex-1 object-contain rounded-lg bg-white shadow"/>
+        {#if images[current + 1]}
+          <img src={images[current + 1]} alt="page" class="hidden md:block flex-1 object-contain rounded-lg bg-white shadow"/>
+        {/if}
+      </div>
     </div>
 
-    <div class="flex items-center justify-center gap-6 py-4 border-t">
-      <button on:click={prev} disabled={current <= 0} class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-20">prev</button>
-      <span class="text-sm text-gray-600">page {current + 1} of {images.length}</span>
-      <button on:click={next} disabled={current + 2 >= images.length} class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-20">next</button>
-    </div>
+    {#if showControls}
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 bg-gray-100 bg-opacity-80 p-2 rounded-full transition-opacity duration-300">
+        <button on:click={prev} disabled={current <= 0} class="px-4 py-1 bg-gray-200 rounded-full disabled:opacity-50">Prev</button>
+
+        <span class="text-sm text-gray-700 justify-content-center mt-1.5">Page {current + 1} / {images.length}</span>
+
+        <button on:click={next} disabled={current + 2 >= images.length} class="px-4 py-1 bg-gray-200 rounded-full disabled:opacity-50">Next</button>
+      </div>
+    {/if}
+
+    <button on:click={remove} class="font-bold absolute top-4 right-10 text-red-500 hover:underline text-sm">delete</button>
   </div>
 {/if}
+
