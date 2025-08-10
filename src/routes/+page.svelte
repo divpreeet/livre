@@ -67,6 +67,7 @@
       <div class="flex-1 flex flex-col items-center justify-center">
         <h1 class="text-8xl font-serif">Livre</h1>
         <p class="text-sm tracking-wide mt-0.5">A COMIC BOOK READER</p>
+        <p class="text-sm tracking-wide mt-0.5">only .cbz files are supported</p>
         <button on:click={loadDemo} class="mt-3 underline">Read Demo</button>
         <Upload on:select={e => fileSelect(e.detail)} />
       </div>
